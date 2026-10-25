@@ -1,0 +1,6 @@
+{
+  "name": "RadyoAI",
+  "description": "RadyoAI - Klinik Karar Simülasyonu. Yapay zeka ve etik odaklı interaktif klinik karar oyunu.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
