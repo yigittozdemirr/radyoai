@@ -10,7 +10,7 @@ Kurgusal Ilgaz Şehir Hastanesi'nde, göğüs röntgeninden zatürre bulgusu iş
 |---|---|
 | **Uygulama (telefonda açılır)** | https://radyoai-5252-klinik.ai.studio |
 | **Demo video (58 sn)** | https://youtu.be/yzlGOEre7cI |
-| **GitHub** | _[repo linki]_ |
+| **GitHub** | https://github.com/yigittozdemirr/radyoai |
 
 ## Teslim içeriği
 
