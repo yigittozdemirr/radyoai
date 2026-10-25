@@ -1,0 +1,16 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+cypress/videos/
+cypress/screenshots/
+*.zip
+*.mp4
+
+# Hocanın ödev materyali (repoya konmuyor)
+SE Primer.pptx
+SEP.md

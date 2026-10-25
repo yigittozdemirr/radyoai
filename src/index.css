@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #0B0F19;
+    color: #F2E6C9;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+}
+
+.font-pixel {
+  font-family: 'Pixelify Sans', cursive, monospace;
+}
+
+.font-body {
+  font-family: 'Nunito', sans-serif;
+}
+
+/* CRT Scanline effect overlay */
+.crt-scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.32) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 4px, 6px 100%;
+}
+
+/* Pixel border utilities */
+.pixel-border {
+  border-width: 2px;
+  border-color: #3A4256;
+}
+
+.pixel-border-teal {
+  border-width: 2px;
+  border-color: #2FA4A9;
+}
+
+.pixel-border-amber {
+  border-width: 2px;
+  border-color: #E8A33D;
+}
+
+.pixel-border-red {
+  border-width: 2px;
+  border-color: #C8553D;
+}
+
+/* Custom scrollbar for dark retro panel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #151D2C;
+}
+::-webkit-scrollbar-thumb {
+  background: #3A4256;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2FA4A9;
+}
+
