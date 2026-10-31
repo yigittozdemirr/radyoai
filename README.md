@@ -1,5 +1,11 @@
 # RadyoAI
 
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vite.dev/)
+[![Gemini](https://img.shields.io/badge/Tutor-Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)](https://ai.google.dev/)
+[![Cypress](https://img.shields.io/badge/E2E-Cypress-69D3A7?style=flat-square&logo=cypress&logoColor=black)](https://www.cypress.io/)
+
 > YZM301 · SE Primer ödevi · Seçimli hikâye oyunu
 
 Kurgusal Ilgaz Şehir Hastanesi'nde, göğüs röntgeninden zatürre bulgusu işaretleyen **RadyoAI** modelinin proje liderisin. *Yes, Your Grace* tarzında masana sırayla üç kişi gelir, her isteği bir yazılım mühendisliği kararıdır: veriyi anonimleştirmek, modeli doğruluğun ötesinde test etmek, son kararı insana bırakmak. Uygulama her kararın teknik sonucunu ve nedenini gösterir; bir AI tutor ipucu verir ama cevabı söylemez.
@@ -52,9 +58,19 @@ Ayrıntılar, en sık hata türü ve prompt v2 önerisi: [eval/tutor-eval.md](ev
 2. **Skor tablosu:** Oyuncuları doğru seçeneği ezberleyip yarışmaya iter, oysa amaç kararın nedenini düşündürmek.
 3. **İkinci bölüm ve daha fazla karar:** Önce mevcut üç kararın öğretip öğretmediğini ölçmek gerekir; ölçmeden içerik çoğaltmak, test edilmemiş kodu artırmak demektir.
 
+## Teknolojiler
+
+| Alan | Teknoloji |
+|---|---|
+| Arayüz | React 19, TypeScript, Vite, Tailwind CSS |
+| Sunucu | Express (`server.ts`, `/api/tutor`) |
+| AI tutor | Gemini API (`@google/genai`) |
+| Test | Cypress E2E |
+| Tasarım ve üretim | Google Stitch, Google AI Studio |
+
 ## Yerelde çalıştırma
 
-Gereken: Node.js 20+
+Gereken: [Node.js](https://nodejs.org/) 20.19 veya üzeri
 
 ```bash
 npm install
