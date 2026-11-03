@@ -1,5 +1,29 @@
 # Sürüm notları
 
+## İzleme bulgusu ve v2.1 (reddedildi)
+
+3 kişiden 5'er oturum, toplam 15 gerçek oturum toplandı (`data/gercek/`). Yayındaki v2.0 bu veriyi hiç görmemişti, bu yüzden 30 gerçek satır (Sahne 2–3) v2.0 için bir dış test kümesidir:
+
+| v2.0, gerçek oyuncularda | |
+|---|---|
+| ROC-AUC | 0,64 |
+| Destek moduna giren oyuncu oranı | **%93** |
+
+**Veri kayması:** Gerçek oyuncular sentetik varsayımdan çok daha hızlı oynuyor. Karar süresi ortancası gerçekte 4,4 sn, sentetikte 15,8 sn. Okuma süresi ortancası gerçekte 0,6 sn, sentetikte 8,0 sn. Bu yüzden v2.0 neredeyse herkesi "aceleci" sayıyor. Aşağıdaki geri alma tetiği ("destek modunun neredeyse herkese açılması") bu durumda tetiklenir.
+
+**v2.1:** Gerçek veri olduğu gibi eklenip yeniden eğitildi. Hold-out ROC-AUC 0,686 < 0,70 çıktı ve `train.py` yayını durdurdu. **Yayınlanmadı.**
+
+## v2.2 planı (eğitimden önce yazıldı)
+
+Kayma, sentetik süre dağılımlarının gerçeğe uymamasından kaynaklanıyor. Tek değişiklik: sentetik üreticinin süre parametreleri, 45 gerçek satırın ölçülen yüzdeliklerinden alınır. "Dikkatli" uç (a = 0) gerçek oyuncuların en yavaş %10'una (p90), "aceleci" uç (a = 1) en hızlı %10'una (p10) denk gelir.
+
+| | v2.0 | v2.2 | Kaynak (gerçek p10 / p90) |
+|---|---|---|---|
+| `karar_suresi_sn` | N(25 − 18a, 5), [2, 90] | N(16 − 14,8a, 2,5), [0,5; 90] | 1,2 / 15,9 sn |
+| `okuma_suresi_sn` | N(12 − 9a, 3), [0,5; 40] | N(3,7 − 3,2a, 0,8), [0,3; 40] | 0,5 / 3,7 sn |
+
+Seçim modeli (P(B) formülü), özellikler, model türü, tohum ve **kabul eşiği (ROC-AUC ≥ 0,70)** değişmez. **Tek deneme yapılır.** Kapıdan geçemezse v2.0 yayında kalır ve sonuç buraya yazılır.
+
 ## v2.0.0: riskli karar modeli
 
 | | |

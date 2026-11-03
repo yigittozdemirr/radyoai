@@ -1,0 +1,16 @@
+oturum_id,sahne_no,seviye,onceki_riskli_karar,onceki_ort_karar_suresi_sn,onceki_ort_okuma_suresi_sn,karar_suresi_sn,okuma_suresi_sn,riskli_karar,kaynak
+c159iin8,1,0,0,0,0,14.8,6.7,0,gercek
+c159iin8,2,0,0,14.8,6.7,12.7,8,1,gercek
+c159iin8,3,0,1,13.8,7.4,16.9,5.1,0,gercek
+k5ov3rdv,1,1,0,0,0,6.4,0.9,0,gercek
+k5ov3rdv,2,1,0,6.4,0.9,13.4,1.7,0,gercek
+k5ov3rdv,3,1,0,9.9,1.3,8.3,2.4,0,gercek
+d93djjvs,1,2,0,0,0,2.8,0.9,0,gercek
+d93djjvs,2,2,0,2.8,0.9,4.2,0.6,0,gercek
+d93djjvs,3,2,0,3.5,0.8,3.6,0.8,0,gercek
+35apjgcs,1,2,0,0,0,3.7,0.4,0,gercek
+35apjgcs,2,2,0,3.7,0.4,5.2,0.6,0,gercek
+35apjgcs,3,2,0,4.5,0.5,19.1,0.5,0,gercek
+iwr38jv9,1,2,0,0,0,2.4,0.5,1,gercek
+iwr38jv9,2,2,1,2.4,0.5,0.9,0.5,1,gercek
+iwr38jv9,3,2,2,1.7,0.5,2,0.5,1,gercek

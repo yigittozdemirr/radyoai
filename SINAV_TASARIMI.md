@@ -4,7 +4,7 @@
 
 ## Soru (klasik, 40 dk, 100 puan)
 
-Bir hastane, akciğer röntgenlerinden kanserli kısmı bulan ve veren bir modeli Python sunucusunda kullanıyor. Model, ağ olmadan da çalışsın diye ONNX'e çevrilip servis tabletlerine taşınacak. Tablet `p ≥ 0,50` ise görüntüyü "radyolog baksın" diye işaretliyor. Elinizde etiketsiz 300 röntgen var.
+Bir hastane, akciğer röntgenlerinden kanserli bölge olasılığı veren bir modeli Python sunucusunda kullanıyor. Model, ağ olmadan da çalışsın diye ONNX'e çevrilip servis tabletlerine taşınacak. Tablet `p ≥ 0,50` ise görüntüyü "radyolog baksın" diye işaretliyor. Elinizde etiketsiz 300 röntgen var.
 
 1. **(25)** Tabletteki modeli test ederken **test kahininiz** ne olur? Bu kahin neyi garanti eder, neyi **etmez**?
 2. **(25)** 300 görüntüyle bir **diferansiyel test** tasarlayın. Hata toleransını kaç seçersiniz ve neden "birebir aynı olmalı" diyemezsiniz? `p = 0,4999` çıkan bir görüntü için tolerans yeterli mi?
