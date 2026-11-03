@@ -24,7 +24,31 @@ Kayma, sentetik süre dağılımlarının gerçeğe uymamasından kaynaklanıyor
 
 Seçim modeli (P(B) formülü), özellikler, model türü, tohum ve **kabul eşiği (ROC-AUC ≥ 0,70)** değişmez. **Tek deneme yapılır.** Kapıdan geçemezse v2.0 yayında kalır ve sonuç buraya yazılır.
 
-## v2.0.0: riskli karar modeli
+## v2.2.0: yayında
+
+| | |
+|---|---|
+| Sabitlenen commit | [`fddc655de8537e0c9980a8ca01cdbe4da2eeb545`](https://huggingface.co/Dreemurr0/radyoai-risk-onnx/commit/fddc655de8537e0c9980a8ca01cdbe4da2eeb545) |
+| Model | https://huggingface.co/Dreemurr0/radyoai-risk-onnx/resolve/fddc655de8537e0c9980a8ca01cdbe4da2eeb545/model.onnx |
+| `model.onnx` sha256 | `88556831f78595d5e7031e8afee6a1de6f732a410f9ec3589c4aef351e9a3a78` |
+| Veri | 645 satır: 45 gerçek (15 oturum, 3 kişi × 5) + 600 kalibre sentetik |
+| Eval (tek deneme) | Hold-out ROC-AUC **0,723** ≥ 0,70: kapıdan geçti. Kabul örnekleri: aceleci p = 0,64, dikkatli p = 0,004 |
+
+**Gerçek oyuncularda v2.0 → v2.2** (Sahne 2–3, 30 satır):
+
+| | v2.0 | v2.2 |
+|---|---|---|
+| Destek moduna giren oyuncu oranı | %93 | **%63** |
+| Doğruluk (p ≥ 0,5) | 0,37 | 0,47 |
+| ROC-AUC | 0,64 | 0,64 |
+
+v2.2, destek modunu herkese açma sorununu büyük ölçüde azalttı. Ama sıralama gücü (AUC) gerçek oyuncularda değişmedi ve destek modu oranı kanarya ölçütümüzün (%10–60) hâlâ biraz üstünde. **Dürüst sınır:** Bu 30 satırın yaklaşık %70'i v2.2'nin eğitim kümesindeydi; yani bu karşılaştırma v2.2 için kısmen eğitim verisi üzerinde yapıldı. Temiz bir ölçüm için yeni oyunculardan toplanacak yeni oturumlar gerekir. Gerçek veride en güçlü sinyal süreler değil, **önceki seçim**: Sahne 1'de B seçenlerin %67'si sonra yine B seçiyor, A seçenlerin %17'si. Bir sonraki sürüm (v2.3) için ilk aday değişiklik bu.
+
+Not: HF commit `3f7d84e` aynı `model.onnx`'i içerir, ama `config.json`'da sürüm yanlışlıkla 2.0.0 yazıyordu. `fddc655` bunu düzeltti; uygulama `fddc655`'e sabitlidir.
+
+**Geri alma:** `src/model/risk.ts` → `MODEL_URL`, v2.0.0 commit'ine (`203d40d…`) ya da boş değere (v1 davranışı) çevrilir.
+
+## v2.0.0: riskli karar modeli (ilk sürüm, geri alma hedefi)
 
 | | |
 |---|---|

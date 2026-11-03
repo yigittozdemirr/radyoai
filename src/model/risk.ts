@@ -3,9 +3,10 @@ import * as ort from 'onnxruntime-web/wasm';
 
 // Model commit'e sabitlenir, main'den okunmaz (RELEASE.md). Boş bırakılırsa model kapalı: oyun v1 gibi çalışır.
 // Sürüm geçmişi (rollback için):
-//   v2.0.0  203d40dbdc20ef0d45a840625ad9dfcf1a17e030  sentetik veri, AUC 0.726
+//   v2.0.0  203d40dbdc20ef0d45a840625ad9dfcf1a17e030  sentetik veri, AUC 0.726 (gerçekte %93 destek modu)
+//   v2.2.0  fddc655de8537e0c9980a8ca01cdbe4da2eeb545  kalibre sentetik + 15 gerçek oturum, AUC 0.723
 export const MODEL_URL =
-  'https://huggingface.co/Dreemurr0/radyoai-risk-onnx/resolve/203d40dbdc20ef0d45a840625ad9dfcf1a17e030/model.onnx';
+  'https://huggingface.co/Dreemurr0/radyoai-risk-onnx/resolve/fddc655de8537e0c9980a8ca01cdbe4da2eeb545/model.onnx';
 
 // spec.md §10: p ≥ 0.5 → sahne destek modunda açılır (model/config.json → decision_threshold)
 export const KARAR_ESIGI = 0.5;

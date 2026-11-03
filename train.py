@@ -27,7 +27,7 @@ from sklearn.preprocessing import StandardScaler
 SEED = 13
 ESIK_AUC = 0.70  # kabul eşiği: spec.md §10
 KARAR_ESIGI = 0.5  # p ≥ 0.5 → sahne destek modunda açılır
-SURUM = "2.0.0"
+SURUM = "2.2.0"
 
 BURASI = Path(__file__).resolve().parent
 VERI = BURASI / "data" / "oturumlar.csv"

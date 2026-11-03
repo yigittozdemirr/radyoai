@@ -5,7 +5,8 @@ describe('Parite: Python kahini ve tarayıcı', () => {
   it('5 referans girdide fark < 1e-4', () => {
     cy.readFile('tests/parite.json').then((ref) => {
       cy.visit('/?parite=1');
-      cy.get('[data-cy=parite-hazir]', { timeout: 60000 }).should('be.visible');
+      // İlk spec: Vite'ın ilk derlemesi + 14 MB wasm + HF modeli soğuk indirilir (sıcakken ~8 sn)
+      cy.get('[data-cy=parite-hazir]', { timeout: 120000 }).should('be.visible');
       cy.get('[data-cy=parite-hata]').should('not.exist');
       cy.get('[data-cy=p]')
         .should('have.length', ref.ornekler.length)

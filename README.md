@@ -16,7 +16,7 @@ Kurgusal Ilgaz Şehir Hastanesi'nde, göğüs röntgeninden zatürre bulgusu iş
 | | |
 |---|---|
 | **Uygulama v2 (telefonda açılır)** | https://yigittozdemirr.github.io/radyoai/ |
-| **Hugging Face modeli (commit'e sabit)** | https://huggingface.co/Dreemurr0/radyoai-risk-onnx/tree/203d40dbdc20ef0d45a840625ad9dfcf1a17e030 |
+| **Hugging Face modeli v2.2 (commit'e sabit)** | https://huggingface.co/Dreemurr0/radyoai-risk-onnx/tree/fddc655de8537e0c9980a8ca01cdbe4da2eeb545 |
 | **Demo video v2** | https://youtu.be/ZEGufixljO8 |
 | **GitHub** | https://github.com/yigittozdemirr/radyoai |
 | v1 uygulama (AI Studio, tutor'lu) · v1 demo | https://radyoai-5252-klinik.ai.studio · https://youtu.be/yzlGOEre7cI |
@@ -56,9 +56,16 @@ v1'de uyum yalnızca girişteki 3 soruya dayanıyordu: "Deneyimliyim" diyen herk
 
 ### Veri
 
-- **Gerçek oturumlar:** Uygulama `?veri=1` ile açılınca (https://yigittozdemirr.github.io/radyoai/?veri=1) her oyun cihaza kaydedilir, son ekrandaki **CSV indir** ile alınır ve `data/gercek/` klasörüne konur. Ad, cihaz kimliği, konum, IP ya da zaman damgası tutulmaz; oturum kimliği rastgele üretilir. _Gerçek oturum sayısı ve kim oynadığı: toplanınca buraya yazılacak._
-- **Sentetik oturumlar:** `python data/sentetik.py`, **tohum 13**, 200 oturum. Üretici kural: her oyuncunun gizli bir "acele" eğilimi vardır, `a ~ U(0, 1)`. Seviye `{0, 1, 2}` arasından eşit olasılıkla seçilir. Her sahnede `karar_suresi ~ N(25 − 18a, 5)` ([2, 90] aralığına kırpılır), `okuma_suresi ~ N(12 − 9a, 3)` ([0,5; 40] aralığına kırpılır) ve `P(B) = sigmoid(−2,2 + 3a + 0,4·[seviye=2] + 0,5·önceki_B + 0,3·[sahne=2])`. Deneyimliyim seviyesinde süre 60 sn'yi geçerse uygulamadaki gibi B seçilir. Model `a`'yı görmez.
+- **Gerçek oturumlar:** Uygulama `?veri=1` ile açılınca (https://yigittozdemirr.github.io/radyoai/?veri=1) her oyun cihaza kaydedilir, son ekrandaki **CSV indir** ile alınır ve `data/gercek/` klasörüne konur. Ad, cihaz kimliği, konum, IP ya da zaman damgası tutulmaz; oturum kimliği rastgele üretilir. **15 gerçek oturum (45 satır):** yurtta 3 oda arkadaşı, kendi telefonlarından 5'er oyun ([data/gercek/](data/gercek/)). Oynamadan önce yalnızca süre ve seçimlerin kaydedildiği söylendi.
+- **Sentetik oturumlar:** `python data/sentetik.py`, **tohum 13**, 200 oturum. Üretici kural: her oyuncunun gizli bir "acele" eğilimi vardır, `a ~ U(0, 1)`. Seviye `{0, 1, 2}` arasından eşit olasılıkla seçilir. Her sahnede `karar_suresi ~ N(16 − 14,8a, 2,5)` ([0,5; 90] aralığına kırpılır), `okuma_suresi ~ N(3,7 − 3,2a, 0,8)` ([0,3; 40] aralığına kırpılır) ve `P(B) = sigmoid(−2,2 + 3a + 0,4·[seviye=2] + 0,5·önceki_B + 0,3·[sahne=2])`. Deneyimliyim seviyesinde süre 60 sn'yi geçerse uygulamadaki gibi B seçilir. Model `a`'yı görmez. Süre parametreleri v2.2'de gerçek oturumların p10/p90 değerlerine kalibre edildi. v2.0'da bu değerler uydurmaydı (25 − 18a ve 12 − 9a): bkz. "Yaşayan döngü".
 - Sentetik veride "acele eden riskli seçer" ilişkisini biz kurduk; model bu varsayımı öğrenir. Bu sınır, model kartında da yazılıdır.
+
+### Yaşayan döngü: v2.0 → izleme → v2.1 reddedildi → v2.2
+
+1. **v2.0** yalnızca sentetik veriyle eğitildi ve yayına alındı (AUC 0,726).
+2. **İzleme:** 15 gerçek oturum toplandı. v2.0 bu oyuncuların **%93'üne** destek modu açıyordu. Gerçek oyuncular sentetik varsayımdan 3–10 kat hızlı oynuyordu (karar süresi ortancası 4,4 sn ve 15,8 sn); bu bir **veri kayması**.
+3. **v2.1:** Gerçek veri olduğu gibi eklendi. AUC 0,686 < 0,70 çıktı ve **eval kapısı yayını durdurdu**.
+4. **v2.2:** Sentetik süre dağılımları gerçek veriye kalibre edildi. Plan ve "tek deneme" kuralı eğitimden **önce** [RELEASE.md](RELEASE.md)'ye yazıldı. AUC 0,723 ile kapıdan geçti ve yayına alındı. Gerçek oyuncularda destek modu oranı %93'ten %63'e indi; AUC ise 0,64'te kaldı. Ayrıntılar ve sınırlar: [RELEASE.md](RELEASE.md).
 
 ### Eğitim ve ölçüm
 
@@ -69,13 +76,16 @@ python train.py
 
 | | |
 |---|---|
-| Hold-out ROC-AUC (kabul eşiği ≥ 0,70) | **0,726** |
-| Doğruluk / hep çoğunluk sınıfını söyleyen model | 0,675 / 0,567 |
-| Kabul örnekleri (spec 6-7) | aceleci p = 0,82 → destek, dikkatli p = 0,16 → normal |
-| ONNX ↔ sklearn maks fark | 7e-8 |
+| v2.2 (yayında) | |
+|---|---|
+| Hold-out ROC-AUC (kabul eşiği ≥ 0,70) | **0,723** |
+| Doğruluk / hep çoğunluk sınıfını söyleyen model | 0,628 / 0,574 |
+| Kabul örnekleri (spec 6-7) | aceleci p = 0,64 → destek, dikkatli p = 0,004 → normal |
+| Gerçek oyuncularda (30 satır, kısmen eğitimde) | AUC 0,64, destek modu %63 |
+| ONNX ↔ sklearn maks fark | 8e-8 |
 | Tekrarlanabilirlik | İki koşuda `model.onnx` sha256 birebir aynı |
 
-Eşik altında `train.py` `exit 1` ile durur ve `model/` klasörünü yazmaz (eşik 0,99'a çekilerek denendi). AUC'nin 0,73 olması bilinçli bir sonuç: veri gürültülü, model basit. Bunu şişirmek yerine kartında olduğu gibi yazdık.
+Eşik altında `train.py` `exit 1` ile durur ve `model/` klasörünü yazmaz. Bu, gerçekte de oldu: v2.1 bu kapıda durdu. AUC'nin 0,72 olması bilinçli bir sonuç: veri gürültülü, model basit. Bunu şişirmek yerine kartında olduğu gibi yazdık.
 
 ## Testler
 
@@ -96,7 +106,7 @@ Tutor `cy.intercept` ile sahte cevap verir; testler Gemini API'yi çağırmaz. M
 npm run demo:v2
 ```
 
-Demo videosu v2: [cypress/demo/demo-v2.cy.js](cypress/demo/demo-v2.cy.js), aynı Sahne 2'de iki oyuncu ve iki model kararı. Süreler gerçektir, çünkü modelin girdisidir.
+Demo videosu v2: [cypress/demo/demo-v2.cy.js](cypress/demo/demo-v2.cy.js), aynı Sahne 2'de iki oyuncu ve iki model kararı. Süreler gerçektir, çünkü modelin girdisidir. Video v2.0 modeliyle kaydedildi (ekranda p ≈ 0,8 ve 0,15). v2.2 aynı iki oyuncuya aynı kararları verir (p ≈ 0,65 → destek, p = 0,004 → normal); bunu `npm run demo:v2` ve E2E testleri 6–7 doğrular.
 
 ## Oyun
 

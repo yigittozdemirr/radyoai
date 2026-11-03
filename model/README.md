@@ -7,7 +7,7 @@ tags:
 pipeline_tag: tabular-classification
 ---
 
-# RadyoAI v2: riskli karar modeli (v2.0.0)
+# RadyoAI v2: riskli karar modeli (v2.2.0)
 
 ## Amaç
 RadyoAI, yapay zekâ proje kararlarını öğreten bir seçimli hikâye oyunudur. Bu model, Sahne 2 ve 3 açılırken
@@ -29,20 +29,20 @@ Sözleşme ve JSON şeması: `config.json`.
 
 ## Model
 `StandardScaler → LogisticRegression`, `random_state=13`, Python 3.12,
-scikit-learn 1.9.1, skl2onnx 1.20.0. ONNX ↔ sklearn maks fark: 7.12e-08.
+scikit-learn 1.9.1, skl2onnx 1.20.0. ONNX ↔ sklearn maks fark: 8.22e-08.
 
 ## Veri
-`data/oturumlar.csv`, yalnızca Sahne 2–3 satırları: 400 satır (0 gerçek, 400 sentetik).
+`data/oturumlar.csv`, yalnızca Sahne 2–3 satırları: 430 satır (30 gerçek, 400 sentetik).
 Gerçek satırlar uygulamanın veri toplama modundan gelir; kişisel veri yoktur. Sentetik satırların üretici
-kuralı ve tohumu `data/sentetik.py` ve README'dedir. Veri özeti (sha256): `d1458f0122d1d44c…`
+kuralı ve tohumu `data/sentetik.py` ve README'dedir. Veri özeti (sha256): `3d1d3dfa432a26ad…`
 
-## Metrikler (%30 tabakalı hold-out, 120 satır)
+## Metrikler (%30 tabakalı hold-out, 129 satır)
 | Metrik | Değer |
 |---|---|
-| **ROC-AUC (kabul eşiği ≥ 0.7)** | **0.726** |
-| Doğruluk (p ≥ 0.5) | 0.675 |
-| Hep çoğunluk sınıfını söyleyen modelin doğruluğu | 0.5667 |
-| Yalnızca gerçek satırlarda ROC-AUC (0 satır) | hesaplanamadı (test kümesinde iki sınıf yok) |
+| **ROC-AUC (kabul eşiği ≥ 0.7)** | **0.7233** |
+| Doğruluk (p ≥ 0.5) | 0.6279 |
+| Hep çoğunluk sınıfını söyleyen modelin doğruluğu | 0.5736 |
+| Yalnızca gerçek satırlarda ROC-AUC (10 satır) | 1.0 |
 
 ## Sınırlar
 - Verinin büyük çoğunluğu sentetiktir. Sentetik veride "acele eden oyuncu riskli seçer" ilişkisini biz kurduk;

@@ -5,9 +5,9 @@
 Üretici kural (tohum 13, README.md'de de yazılı):
   Her sentetik oyuncunun gizli bir "acele" eğilimi vardır: a ~ U(0, 1).
   Seviye ~ {0, 1, 2} eşit olasılıkla.
-  Her sahnede:
-    karar_suresi_sn ~ N(25 - 18a, 5), [2, 90] aralığına kırpılır
-    okuma_suresi_sn ~ N(12 - 9a, 3),  [0.5, 40] aralığına kırpılır
+  Her sahnede (v2.2: süreler 45 gerçek satırın p10/p90'ına kalibre, RELEASE.md):
+    karar_suresi_sn ~ N(16 - 14.8a, 2.5), [0.5, 90] aralığına kırpılır
+    okuma_suresi_sn ~ N(3.7 - 3.2a, 0.8), [0.3, 40] aralığına kırpılır
     P(B) = sigmoid(-2.2 + 3.0a + 0.4·[seviye=2] + 0.5·önceki_B + 0.3·[sahne=2])
   Deneyimliyim (seviye 2) için karar süresi 60 sn'yi geçerse uygulamadaki gibi süre dolar: süre 60, seçim B.
 Model "a"yı görmez; yalnızca önceki sahnelerdeki süreleri ve seçimleri görür.
@@ -36,8 +36,8 @@ def sentetik_oturumlar(rng):
         a, seviye = rng.uniform(), int(rng.integers(3))
         kararlar = []
         for sahne in (1, 2, 3):
-            karar = float(np.clip(rng.normal(25 - 18 * a, 5), 2, 90))
-            okuma = round(float(np.clip(rng.normal(12 - 9 * a, 3), 0.5, 40)), 1)
+            karar = float(np.clip(rng.normal(16 - 14.8 * a, 2.5), 0.5, 90))
+            okuma = round(float(np.clip(rng.normal(3.7 - 3.2 * a, 0.8), 0.3, 40)), 1)
             onceki_b = sum(k[2] for k in kararlar)
             z = -2.2 + 3.0 * a + 0.4 * (seviye == 2) + 0.5 * onceki_b + 0.3 * (sahne == 2)
             riskli = int(rng.uniform() < 1 / (1 + math.exp(-z)))

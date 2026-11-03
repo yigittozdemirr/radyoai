@@ -1,6 +1,6 @@
 {
-  "model_url": "https://huggingface.co/Dreemurr0/radyoai-risk-onnx/resolve/203d40dbdc20ef0d45a840625ad9dfcf1a17e030/model.onnx",
-  "model_sha256": "6708765a73879548012d0b9d208fa4b2ff08b4dc3bb84f15d4039c5e343d205a",
+  "model_url": "https://huggingface.co/Dreemurr0/radyoai-risk-onnx/resolve/fddc655de8537e0c9980a8ca01cdbe4da2eeb545/model.onnx",
+  "model_sha256": "88556831f78595d5e7031e8afee6a1de6f732a410f9ec3589c4aef351e9a3a78",
   "onnxruntime": "1.31.1",
   "tolerans": 0.0001,
   "ornekler": [
@@ -13,7 +13,7 @@
         3.0,
         1.0
       ],
-      "p": 0.8194491863250732
+      "p": 0.642848789691925
     },
     {
       "ad": "dikkatli (spec örnek 7)",
@@ -24,7 +24,7 @@
         25.0,
         12.0
       ],
-      "p": 0.1558307409286499
+      "p": 0.004426538944244385
     },
     {
       "ad": "süre doldu, tereddütlü",
@@ -35,7 +35,7 @@
         60.0,
         0.3
       ],
-      "p": 0.1844373643398285
+      "p": 0.05233919620513916
     },
     {
       "ad": "sahne 3, iki riskli karar",
@@ -46,7 +46,7 @@
         8.4,
         2.7
       ],
-      "p": 0.7415845990180969
+      "p": 0.5147196054458618
     },
     {
       "ad": "yeni başlayan, orta hız",
@@ -57,7 +57,7 @@
         14.6,
         6.2
       ],
-      "p": 0.5118419528007507
+      "p": 0.11083212494850159
     }
   ]
 }
