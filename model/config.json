@@ -1,0 +1,130 @@
+{
+  "title": "RadyoAI v2: riskli karar modeli",
+  "version": "2.0.0",
+  "description": "Oyuncunun bir sonraki sahnede riskli seçeneği (B) seçme olasılığı. Yalnızca RadyoAI eğitim oyunu içindir.",
+  "input": {
+    "name": "input",
+    "dtype": "float32",
+    "shape": [
+      null,
+      5
+    ]
+  },
+  "output": {
+    "name": "probabilities",
+    "dtype": "float32",
+    "shape": [
+      null,
+      2
+    ],
+    "positive_class_index": 1
+  },
+  "features": [
+    {
+      "name": "sahne_no",
+      "description": "Açılan sahne",
+      "unit": "2 veya 3",
+      "min": 2,
+      "max": 3
+    },
+    {
+      "name": "seviye",
+      "description": "Girişteki beyan: 0 Yeni başladım, 1 Biraz biliyorum, 2 Deneyimliyim",
+      "unit": "kod",
+      "min": 0,
+      "max": 2
+    },
+    {
+      "name": "onceki_riskli_karar",
+      "description": "Önceki sahnelerde seçilen B sayısı",
+      "unit": "adet",
+      "min": 0,
+      "max": 2
+    },
+    {
+      "name": "onceki_ort_karar_suresi_sn",
+      "description": "Önceki sahnelerde sahne açılışından seçime ortalama süre",
+      "unit": "saniye",
+      "min": 0,
+      "max": null
+    },
+    {
+      "name": "onceki_ort_okuma_suresi_sn",
+      "description": "Önceki sahnelerde sonuç panelinde geçen ortalama süre",
+      "unit": "saniye",
+      "min": 0,
+      "max": null
+    }
+  ],
+  "input_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": [
+      "sahne_no",
+      "seviye",
+      "onceki_riskli_karar",
+      "onceki_ort_karar_suresi_sn",
+      "onceki_ort_okuma_suresi_sn"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "sahne_no": {
+        "type": "number",
+        "minimum": 2,
+        "maximum": 3
+      },
+      "seviye": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 2
+      },
+      "onceki_riskli_karar": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 2
+      },
+      "onceki_ort_karar_suresi_sn": {
+        "type": "number",
+        "minimum": 0
+      },
+      "onceki_ort_okuma_suresi_sn": {
+        "type": "number",
+        "minimum": 0
+      }
+    }
+  },
+  "classes": [
+    "0",
+    "1"
+  ],
+  "class_labels": {
+    "0": "güvenli seçim (A)",
+    "1": "riskli seçim (B)"
+  },
+  "decision_threshold": 0.5,
+  "acceptance": {
+    "metric": "roc_auc",
+    "threshold": 0.7,
+    "split": "30% stratified hold-out"
+  },
+  "metrics": {
+    "roc_auc": 0.726,
+    "accuracy": 0.675,
+    "cogunluk_sinifi_accuracy": 0.5667,
+    "gercek_roc_auc": null,
+    "test_satir": 120,
+    "test_gercek_satir": 0
+  },
+  "onnx_sklearn_max_diff": 7.12e-08,
+  "data": {
+    "file": "data/oturumlar.csv",
+    "sha256": "d1458f0122d1d44cc7ea37121a3e19d0e0400c8f717588c649347cd0d99d4644",
+    "rows_used": 400,
+    "gercek_rows": 0,
+    "sentetik_rows": 400
+  },
+  "seed": 13,
+  "python_version": "3.12",
+  "sklearn_version": "1.9.1",
+  "skl2onnx_version": "1.20.0"
+}
