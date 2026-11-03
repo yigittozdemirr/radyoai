@@ -17,7 +17,7 @@ Kurgusal Ilgaz Şehir Hastanesi'nde, göğüs röntgeninden zatürre bulgusu iş
 |---|---|
 | **Uygulama v2 (telefonda açılır)** | https://yigittozdemirr.github.io/radyoai/ |
 | **Hugging Face modeli (commit'e sabit)** | https://huggingface.co/Dreemurr0/radyoai-risk-onnx/tree/203d40dbdc20ef0d45a840625ad9dfcf1a17e030 |
-| **Demo video v2** | _yüklenecek_ |
+| **Demo video v2** | https://youtu.be/ZEGufixljO8 |
 | **GitHub** | https://github.com/yigittozdemirr/radyoai |
 | v1 uygulama (AI Studio, tutor'lu) · v1 demo | https://radyoai-5252-klinik.ai.studio · https://youtu.be/yzlGOEre7cI |
 
