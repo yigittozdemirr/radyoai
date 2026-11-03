@@ -17,6 +17,17 @@ import { StartScreen } from './components/StartScreen.tsx';
 import { SceneScreen } from './components/SceneScreen.tsx';
 import { EndingScreen } from './components/EndingScreen.tsx';
 import { ChatMessage } from './components/TutorSheet.tsx';
+import {
+  Karar,
+  yeniOturumId,
+  oturumuKaydet,
+  kayitliOturumSayisi,
+  csvIndir,
+  veriyiTemizle,
+} from './model/veri.ts';
+
+// Veri toplama modu: uygulama ?veri=1 ile açılınca her oturum bu cihaza kaydedilir
+const VERI_MODU = new URLSearchParams(location.search).has('veri');
 
 interface Resources {
   butce: number;
@@ -45,6 +56,11 @@ export default function App() {
   // Stored choices: { 1: 'A' | 'B', 2: 'A' | 'B', 3: 'A' | 'B' }
   const [decisions, setDecisions] = useState<Record<number, 'A' | 'B'>>({});
 
+  // Davranış kaydı (model girdileri bundan hesaplanır)
+  const [kararlar, setKararlar] = useState<Karar[]>([]);
+  const [oturumId, setOturumId] = useState(yeniOturumId);
+  const [oturumSayisi, setOturumSayisi] = useState(() => (VERI_MODU ? kayitliOturumSayisi() : 0));
+
   // Tutor chat history per scene
   const [tutorHistories, setTutorHistories] = useState<Record<number, ChatMessage[]>>({
     1: [],
@@ -67,12 +83,14 @@ export default function App() {
   const handleStartSimulation = () => {
     setResources(INITIAL_RESOURCES);
     setDecisions({});
+    setKararlar([]);
+    setOturumId(yeniOturumId());
     setTutorHistories({ 1: [], 2: [], 3: [] });
     setGameState('SAHNE_1');
   };
 
   // Handle choice made on a scene
-  const handleMakeChoice = (choiceKey: 'A' | 'B') => {
+  const handleMakeChoice = (choiceKey: 'A' | 'B', kararSuresiSn: number, okumaSuresiSn: number) => {
     if (!currentScene) return;
 
     const sceneId = currentScene.id;
@@ -90,6 +108,21 @@ export default function App() {
       ...prev,
       [sceneId]: choiceKey,
     }));
+
+    const yeniKararlar: Karar[] = [
+      ...kararlar,
+      {
+        sahne_no: sceneId,
+        karar_suresi_sn: kararSuresiSn,
+        okuma_suresi_sn: okumaSuresiSn,
+        riskli_karar: choiceKey === 'B' ? 1 : 0,
+      },
+    ];
+    setKararlar(yeniKararlar);
+    if (sceneId === 3 && VERI_MODU) {
+      oturumuKaydet(oturumId, seviye, yeniKararlar);
+      setOturumSayisi(kayitliOturumSayisi());
+    }
 
     // Transition state
     if (sceneId === 1) {
@@ -219,6 +252,41 @@ Kurallar:
           hedef={hedef}
           onRestart={handleRestart}
         />
+      )}
+
+      {VERI_MODU && (gameState === 'GIRIS' || gameState === 'SON') && (
+        <div
+          data-cy="veri-paneli"
+          className="w-full max-w-lg mx-auto p-4 bg-[#151D2C] border-2 border-[#E8A33D] text-xs font-body space-y-2"
+        >
+          <p className="font-pixel text-[#E8A33D]">VERİ TOPLAMA MODU</p>
+          <p>
+            Bu cihazda <span data-cy="oturum-sayisi">{oturumSayisi}</span> oturum kayıtlı. Yalnızca
+            karar ve okuma süreleri ile seçimler tutulur; ad, cihaz ya da konum bilgisi tutulmaz.
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              data-cy="csv-indir"
+              onClick={csvIndir}
+              className="flex-1 min-h-[44px] bg-[#E8A33D] text-[#0B101B] font-pixel rounded cursor-pointer"
+            >
+              CSV indir
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (confirm('Bu cihazdaki tüm kayıtlar silinsin mi?')) {
+                  veriyiTemizle();
+                  setOturumSayisi(0);
+                }
+              }}
+              className="min-h-[44px] px-3 border-2 border-[#3A4256] text-[#A6B2C8] font-pixel rounded cursor-pointer"
+            >
+              Temizle
+            </button>
+          </div>
+        </div>
       )}
     </main>
   );

@@ -17,8 +17,8 @@ function beklenen(yol) {
   return { ...k, iyi: k.guven >= 5 && k.uyum >= 5 };
 }
 
-function basla({ seviye = 'orta', rol = 'ogrenci', hedef = 'sinamak' } = {}) {
-  cy.visit('/');
+function basla({ seviye = 'orta', rol = 'ogrenci', hedef = 'sinamak', url = '/' } = {}) {
+  cy.visit(url);
   cy.get(`[data-cy=seviye-${seviye}]`).click();
   cy.get(`[data-cy=rol-${rol}]`).click();
   cy.get(`[data-cy=hedef-${hedef}]`).click();
@@ -154,6 +154,35 @@ describe('AI tutor (stub)', () => {
     cy.get('[data-cy=tutor-kapat]').click();
     sec('A');
     cy.get('[data-cy=sahne-2]').should('be.visible');
+  });
+});
+
+describe('Veri toplama modu (?veri=1)', () => {
+  const satirlar = (win) => JSON.parse(win.localStorage.getItem('radyoai-veri') || '[]');
+
+  it('Her karar bir satır olarak kaydedilir, önceki davranış özelliklere girer', () => {
+    basla({ seviye: 'deneyimli', url: '/?veri=1' });
+    ['B', 'A', 'B'].forEach(sec);
+    cy.get('[data-cy=oturum-sayisi]').should('have.text', '1');
+    cy.window().then((win) => {
+      const s = satirlar(win).map((satir) => satir.split(','));
+      expect(s).to.have.length(3);
+      s.forEach((sutun) => expect(sutun).to.have.length(10));
+      // oturum_id, sahne_no, seviye, onceki_riskli, ..., riskli_karar, kaynak
+      expect(s.map((x) => x[1])).to.deep.eq(['1', '2', '3']);
+      expect(s.map((x) => x[2])).to.deep.eq(['2', '2', '2']);
+      expect(s.map((x) => x[3])).to.deep.eq(['0', '1', '1']);
+      expect(s.map((x) => x[8])).to.deep.eq(['1', '0', '1']);
+      expect(new Set(s.map((x) => x[0])).size).to.eq(1);
+      s.forEach((x) => expect(x[9]).to.eq('gercek'));
+    });
+  });
+
+  it('Mod kapalıyken hiçbir şey kaydedilmez', () => {
+    basla();
+    ['A', 'A', 'A'].forEach(sec);
+    cy.get('[data-cy=veri-paneli]').should('not.exist');
+    cy.window().then((win) => expect(satirlar(win)).to.have.length(0));
   });
 });
 

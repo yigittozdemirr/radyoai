@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   SceneData,
   Rol,
@@ -37,7 +37,7 @@ interface SceneScreenProps {
   rol: Rol;
   resources: Resources;
   decision1WasB: boolean;
-  onMakeChoice: (choiceKey: 'A' | 'B', isTimeout?: boolean) => void;
+  onMakeChoice: (choiceKey: 'A' | 'B', kararSuresiSn: number, okumaSuresiSn: number) => void;
   // Tutor props
   tutorHistory: ChatMessage[];
   onSendTutorMessage: (msg: string) => Promise<void>;
@@ -74,7 +74,13 @@ export function SceneScreen({
     etki: ChoiceImpact;
     isTimeout: boolean;
     choiceKey: 'A' | 'B';
+    kararSuresiSn: number;
+    acilis: number;
   } | null>(null);
+
+  // Model girdisi: sahne açılışından seçime kadar geçen süre (tereddüt)
+  const sahneAcilis = useRef(performance.now());
+  const saniye = (baslangic: number) => Math.round((performance.now() - baslangic) / 100) / 10;
 
   // Reset timer and hint box state on scene change
   useEffect(() => {
@@ -116,14 +122,16 @@ export function SceneScreen({
       etki: choice.etki,
       isTimeout,
       choiceKey,
+      kararSuresiSn: saniye(sahneAcilis.current),
+      acilis: performance.now(),
     });
   };
 
   const handleResultContinue = () => {
     if (!activeResult) return;
-    const { choiceKey, isTimeout } = activeResult;
+    const { choiceKey, kararSuresiSn, acilis } = activeResult;
     setActiveResult(null);
-    onMakeChoice(choiceKey, isTimeout);
+    onMakeChoice(choiceKey, kararSuresiSn, saniye(acilis));
   };
 
   const formattedReplik = formatReplacements(scene.replik, rol);
