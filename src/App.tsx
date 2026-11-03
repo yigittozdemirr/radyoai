@@ -24,10 +24,15 @@ import {
   kayitliOturumSayisi,
   csvIndir,
   veriyiTemizle,
+  ozellikler,
 } from './model/veri.ts';
+import { modelYukle, riskOlasiliklari } from './model/risk.ts';
+import { ParitePage } from './components/ParitePage.tsx';
 
 // Veri toplama modu: uygulama ?veri=1 ile açılınca her oturum bu cihaza kaydedilir
 const VERI_MODU = new URLSearchParams(location.search).has('veri');
+// Parite sayfası: tests/parite.json'daki 5 girdiyi tarayıcıdaki modelle çalıştırır (Cypress diferansiyel testi)
+const PARITE_MODU = new URLSearchParams(location.search).has('parite');
 
 interface Resources {
   butce: number;
@@ -60,6 +65,8 @@ export default function App() {
   const [kararlar, setKararlar] = useState<Karar[]>([]);
   const [oturumId, setOturumId] = useState(yeniOturumId);
   const [oturumSayisi, setOturumSayisi] = useState(() => (VERI_MODU ? kayitliOturumSayisi() : 0));
+  // Modelin sahne başına verdiği riskli seçim olasılığı (yalnızca Sahne 2 ve 3)
+  const [riskP, setRiskP] = useState<Record<number, number>>({});
 
   // Tutor chat history per scene
   const [tutorHistories, setTutorHistories] = useState<Record<number, ChatMessage[]>>({
@@ -84,7 +91,9 @@ export default function App() {
     setResources(INITIAL_RESOURCES);
     setDecisions({});
     setKararlar([]);
+    setRiskP({});
     setOturumId(yeniOturumId());
+    modelYukle().catch(() => {}); // Sahne 2'ye kadar hazır olsun
     setTutorHistories({ 1: [], 2: [], 3: [] });
     setGameState('SAHNE_1');
   };
@@ -119,6 +128,14 @@ export default function App() {
       },
     ];
     setKararlar(yeniKararlar);
+
+    const sonraki = sceneId + 1;
+    if (sonraki <= 3) {
+      riskOlasiliklari([ozellikler(sonraki, seviye, yeniKararlar)])
+        .then(([p]) => setRiskP((prev) => ({ ...prev, [sonraki]: p })))
+        .catch((e) => console.warn('Model çalışmadı, oyun v1 gibi devam ediyor:', e));
+    }
+
     if (sceneId === 3 && VERI_MODU) {
       oturumuKaydet(oturumId, seviye, yeniKararlar);
       setOturumSayisi(kayitliOturumSayisi());
@@ -212,6 +229,8 @@ Kurallar:
     setGameState('GIRIS');
   };
 
+  if (PARITE_MODU) return <ParitePage />;
+
   return (
     <main className="min-h-screen bg-[#0B0F19] text-[#F2E6C9] font-body flex flex-col items-center justify-start">
       {gameState === 'GIRIS' && (
@@ -237,6 +256,7 @@ Kurallar:
             rol={rol}
             resources={resources}
             decision1WasB={decisions[1] === 'B'}
+            riskP={riskP[currentScene.id]}
             onMakeChoice={handleMakeChoice}
             tutorHistory={tutorHistories[currentScene.id] || []}
             onSendTutorMessage={handleSendTutorMessage}

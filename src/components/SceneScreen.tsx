@@ -12,6 +12,7 @@ import {
   IMAGES,
   ChoiceImpact,
 } from '../data/gameData.ts';
+import { KARAR_ESIGI } from '../model/risk.ts';
 import { PixelSceneImage } from './PixelSceneImage.tsx';
 import { ResultSheet } from './ResultSheet.tsx';
 import { TutorSheet, ChatMessage } from './TutorSheet.tsx';
@@ -37,6 +38,7 @@ interface SceneScreenProps {
   rol: Rol;
   resources: Resources;
   decision1WasB: boolean;
+  riskP?: number; // modelin riskli seçim olasılığı; yoksa (Sahne 1, model yok) v1 davranışı
   onMakeChoice: (choiceKey: 'A' | 'B', kararSuresiSn: number, okumaSuresiSn: number) => void;
   // Tutor props
   tutorHistory: ChatMessage[];
@@ -51,14 +53,19 @@ export function SceneScreen({
   rol,
   resources,
   decision1WasB,
+  riskP,
   onMakeChoice,
   tutorHistory,
   onSendTutorMessage,
   isTutorLoading,
   tutorError,
 }: SceneScreenProps) {
+  // Destek modu (spec.md §10): ipucu açılır, süre baskısı kalkar, mentor notu görünür
+  const destek = riskP !== undefined && riskP >= KARAR_ESIGI;
+
   // Timer for "Deneyimliyim"
   const isDeneyimli = seviye === 'Deneyimliyim';
+  const sayacVar = isDeneyimli && !destek;
   const [timeLeft, setTimeLeft] = useState(60);
 
   // Hint box: open by default if "Yeni başladım"
@@ -89,9 +96,13 @@ export function SceneScreen({
     setActiveResult(null);
   }, [scene.id, seviye]);
 
+  useEffect(() => {
+    if (destek) setHintOpen(true);
+  }, [destek]);
+
   // Countdown timer effect
   useEffect(() => {
-    if (!isDeneyimli || activeResult !== null) return;
+    if (!sayacVar || activeResult !== null) return;
 
     if (timeLeft <= 0) {
       // Trigger choice B automatically
@@ -104,7 +115,7 @@ export function SceneScreen({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isDeneyimli, timeLeft, activeResult]);
+  }, [sayacVar, timeLeft, activeResult]);
 
   const handleChoice = (choiceKey: 'A' | 'B', isTimeout = false) => {
     const choice = scene[choiceKey];
@@ -139,6 +150,8 @@ export function SceneScreen({
   return (
     <div
       data-cy={`sahne-${scene.id}`}
+      data-p={riskP ?? ''}
+      data-destek={destek}
       className="w-full max-w-lg mx-auto flex flex-col bg-[#0B0F19] min-h-screen"
     >
       {/* Top Half: Pixel Art Scene (~410px) */}
@@ -153,7 +166,7 @@ export function SceneScreen({
 
           <div className="flex items-center gap-2">
             {/* Timer for Deneyimliyim */}
-            {isDeneyimli && (
+            {sayacVar && (
               <div className="bg-[#151D2C]/90 border-2 border-[#E8A33D] px-2.5 py-1 text-xs font-pixel text-[#E8A33D] flex items-center gap-1 shadow-md">
                 <Clock className="w-3.5 h-3.5" />
                 <span data-cy="sayac">{timeLeft}s</span>
@@ -275,6 +288,18 @@ export function SceneScreen({
             </div>
           </div>
         </div>
+
+        {destek && (
+          <div
+            data-cy="mentor-notu"
+            className="bg-[#151D2C] border-2 border-[#2FA4A9] p-3 rounded text-xs font-body text-[#F2E6C9] flex items-start gap-2"
+          >
+            <span className="font-pixel text-[#2FA4A9] shrink-0">MENTOR:</span>
+            <span className="leading-snug">
+              Acele etme. Bu kararın kimi etkilediğini düşün. Bu sahnede süre baskısı yok.
+            </span>
+          </div>
+        )}
 
         {/* Hint Box (ipucu-kutusu) */}
         <div

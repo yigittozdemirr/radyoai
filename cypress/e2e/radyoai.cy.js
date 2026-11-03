@@ -44,6 +44,8 @@ describe('Karar yolları (3 karar x 2 seçenek = 8 yol)', () => {
       basla();
       [...yol].forEach((secim, i) => {
         cy.get(`[data-cy=sahne-${i + 1}]`).should('be.visible');
+        // Regresyon v2: Sahne 2-3'te modelin kararı gelmeden seçme; v1 yolları model devredeyken de geçmeli
+        if (i > 0) cy.get(`[data-cy=sahne-${i + 1}]`, { timeout: 60000 }).should('have.attr', 'data-p').and('not.be.empty');
         sec(secim);
       });
 
@@ -154,6 +156,42 @@ describe('AI tutor (stub)', () => {
     cy.get('[data-cy=tutor-kapat]').click();
     sec('A');
     cy.get('[data-cy=sahne-2]').should('be.visible');
+  });
+});
+
+describe('Model: destek modu (spec.md §10, kabul örnekleri 6-7; örnek 8 train.py içinde)', () => {
+  const MODEL = /huggingface\.co\/.*\/model\.onnx/;
+
+  it('6. Aceleci oyuncu: Sahne 2 destek modunda açılır', () => {
+    basla({ seviye: 'deneyimli' });
+    sec('B'); // hemen seç, sonucu hemen geç
+    cy.get('[data-cy=sahne-2]', { timeout: 60000 }).should('have.attr', 'data-destek', 'true');
+    cy.get('[data-cy=mentor-notu]').should('be.visible');
+    cy.get('[data-cy=sayac]').should('not.exist');
+    cy.get('[data-cy=ipucu-kutusu]').should('contain', 'herkese');
+  });
+
+  it('7. Dikkatli oyuncu (25 sn düşünür, 12 sn okur): Sahne 2 normal açılır', () => {
+    basla({ seviye: 'deneyimli' });
+    cy.wait(25000);
+    cy.get('[data-cy=secim-A]').click();
+    cy.wait(12000);
+    cy.get('[data-cy=btn-devam]').click();
+    cy.get('[data-cy=sahne-2]', { timeout: 60000 }).should('have.attr', 'data-p').and('not.be.empty');
+    cy.get('[data-cy=sahne-2]').should('have.attr', 'data-destek', 'false');
+    cy.get('[data-cy=mentor-notu]').should('not.exist');
+    cy.get('[data-cy=sayac]').should('be.visible');
+  });
+
+  it('Model indirilemezse oyun v1 gibi devam eder', () => {
+    cy.intercept('GET', MODEL, { forceNetworkError: true }).as('model');
+    basla({ seviye: 'deneyimli' });
+    sec('B');
+    cy.get('[data-cy=sahne-2]').should('be.visible');
+    cy.wait(1000);
+    cy.get('[data-cy=sahne-2]').should('have.attr', 'data-destek', 'false');
+    cy.get('[data-cy=sayac]').should('be.visible');
+    cy.get('[data-cy=mentor-notu]').should('not.exist');
   });
 });
 
