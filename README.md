@@ -156,5 +156,6 @@ _Bu bölümü teslimden önce kendi cümlelerinle gözden geçir._
 - **Claude Code (Anthropic):** v2'nin kodunu yazdı: veri toplama modu, `train.py`, sentetik veri üreticisi, `onnxruntime-web` entegrasyonu, parite ve Cypress testleri, GitHub Pages akışı. Spec, RELEASE.md ve model kartının ilk taslaklarını da o hazırladı.
 - **Benim kararlarım:** Claude Code'un önerdiği hedefi ("riskli karar") ve eşiği (ROC-AUC ≥ 0,70) eğitimden önce onayladım. Canlı yayın için Render yerine GitHub Pages'i seçtim. Yalnızca sentetik veriyle yetinmeyip gerçek oturum toplamaya karar verdim.
 - **Doğrulama sırasında yakalanan hatalar:** İlk regresyon koşusunda eski testlerin model yüklenmeden bittiği görüldü. Testler, modelin kararını bekleyecek şekilde düzeltildi. Parite testinin zaman aşımı, tarayıcının 28 MB'lık WebGPU paketini indirmesinden kaynaklanıyordu; 14 MB'lık CPU paketine geçildi.
+- **Sınav tasarımı:** Claude Code bana 3 soru sordu. Sorunun odağı (beni en çok zorlayan kavram: test kahini), alanı (görüntü işleme) ve önerilen çeldiriciler arasından en sık yapılacak iki hata benim cevaplarımdan geldi. "Regresyon" kelimesindeki karışıklığı da bu sohbette fark ettim. Claude Code bunları bir sayfalık soruya dönüştürdü.
 - _Elle düzelttiğim çıktı: …_
 - **v1:** Google Stitch (ekran tasarımı), Google AI Studio (ilk uygulama), Claude Code (testler, tutor eval).
