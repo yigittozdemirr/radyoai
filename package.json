@@ -13,7 +13,9 @@
     "cy:run": "cypress run",
     "test:e2e": "start-server-and-test dev http://localhost:3000 cy:run",
     "cy:demo": "cypress run --config specPattern=cypress/demo/*.cy.js",
-    "demo": "start-server-and-test dev http://localhost:3000 cy:demo"
+    "demo": "start-server-and-test dev http://localhost:3000 cy:demo",
+    "cy:demo:v2": "cypress run --config specPattern=cypress/demo/demo-v2.cy.js",
+    "demo:v2": "start-server-and-test dev http://localhost:3000 cy:demo:v2"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
