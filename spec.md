@@ -135,7 +135,61 @@ stateDiagram-v2
   3. **Son:** son başlığı, kaynakların son hali, karar listesi, "Yeniden oyna".
 - Sonuç ("Ne oldu / Neden") ayrı bir ekran değildir, sahne ekranının üstünde açılan bir paneldir.
 
-## 10. Kapsam dışı
+## 10. v2: Oyuncuya uyum sağlayan model
+
+> Bu bölüm model eğitilmeden **önce** yazıldı. Eşiği geçmeyen model yayınlanmaz.
+
+### Problem
+
+v1'de uyum yalnızca girişteki 3 soruya dayanıyordu: "Deneyimliyim" diyen herkes süre baskısı altında oynuyordu. Oysa kendini deneyimli sanıp sahneleri hızla geçen, "Neden" açıklamasını okumadan devam eden oyuncu, bir sonraki kararda da hata yapmaya yatkındır. v2'de oyun bunu oyuncunun **davranışından** öğrenir.
+
+### Model gereksinimi
+
+**Soru:** "Bu oyuncu şimdi açılan sahnede riskli seçeneği (B) seçecek mi?"
+
+- **Ne zaman çalışır:** Sahne 2 ve Sahne 3 açılırken, oyuncu karar vermeden önce. Sahne 1'de oyuncu hakkında henüz davranış verisi yoktur (soğuk başlangıç), model çalışmaz ve oyun v1 gibi davranır.
+- **Girdiler** (sıra sabittir, `model/config.json` ile aynı):
+
+| # | Özellik | Anlamı | Birim |
+|---|---|---|---|
+| 1 | `sahne_no` | Açılan sahne | 2 veya 3 |
+| 2 | `seviye` | Giriş ekranındaki beyan | 0 = Yeni başladım, 1 = Biraz biliyorum, 2 = Deneyimliyim |
+| 3 | `onceki_riskli_karar` | Önceki sahnelerde seçilen B sayısı | adet (0–2) |
+| 4 | `onceki_ort_karar_suresi_sn` | Önceki sahnelerde sahne açılışından seçime kadar geçen ortalama süre (tereddüt) | saniye |
+| 5 | `onceki_ort_okuma_suresi_sn` | Önceki sahnelerde "Ne oldu / Neden" panelinde geçirilen ortalama süre | saniye |
+
+- **Çıktı:** `p`, yani riskli seçim olasılığı (0–1).
+- **Model:** `StandardScaler → LogisticRegression`, `random_state=13`, sklearn'den ONNX'e aktarılır.
+- **Oyuna etkisi:** `p ≥ 0,5` ise sahne **destek modunda** açılır:
+  1. İpucu kutusu kendiliğinden açılır.
+  2. 60 sn sayaç (Deneyimliyim seviyesi) bu sahnede çalışmaz, süre baskısı kalkar.
+  3. Konuşma balonunun üstünde bir **mentor notu** görünür: "Acele etme. Bu kararın kimi etkilediğini düşün."
+
+  `p < 0,5` ise sahne v1'deki gibi açılır.
+- **Hata durumu:** Model indirilemezse ya da çalışmazsa oyun v1 gibi devam eder; oyun hiçbir zaman modeli beklerken kilitlenmez.
+
+### Eval metriği ve kabul eşiği (altın standart)
+
+| | |
+|---|---|
+| Metrik | **ROC-AUC**, %30 tabakalı hold-out test kümesinde (`random_state=13`) |
+| Kabul eşiği | **ROC-AUC ≥ 0,70** |
+| Neden AUC | Veri dengesiz olabilir (oyuncuların çoğu A seçer). Doğruluk, herkese "A seçecek" diyen işe yaramaz bir modeli de yüksek gösterir. Karar 2'deki dersin aynısı. |
+| Ek rapor | Doğruluk ve yalnızca `kaynak = gercek` satırlarındaki AUC model kartına yazılır, ama kapı yalnızca yukarıdaki eşiktir. |
+
+`train.py` eşiğin altında kalırsa hata koduyla durur ve `model/` klasörüne hiçbir şey yazmaz.
+
+### Parite (diferansiyel test)
+
+Aynı `model.onnx`, aynı 5 referans girdide Python (`tests/parite.py`) ve tarayıcıda (`onnxruntime-web`) çalıştırılır. Olasılıklar arasındaki fark **< 1e-4** olmalıdır.
+
+### Kabul örnekleri (v2)
+
+6. **Aceleci oyuncu:** Seviye "Deneyimliyim". Oyuncu Karar 1'de 3 sn içinde B'yi seçer ve sonuç panelini 1 sn içinde geçer → Sahne 2 destek modunda açılır: ipucu kutusu açıktır, sayaç görünmez, mentor notu görünür.
+7. **Dikkatli oyuncu:** Seviye "Deneyimliyim". Oyuncu Karar 1'de 25 sn düşünüp A'yı seçer ve sonuç panelini 12 sn okur → Sahne 2 normal açılır: sayaç 60'tan geri sayar, mentor notu yoktur.
+8. **Eval kapısı:** Hold-out ROC-AUC 0,70'in altında kalırsa `python train.py` sıfırdan farklı bir çıkış koduyla biter ve `model/model.onnx` değişmez.
+
+## 11. Kapsam dışı
 
 - Kullanıcı hesabı, giriş/kayıt
 - İkinci bölüm, ikinci gün
@@ -146,3 +200,5 @@ stateDiagram-v2
 - Karakter animasyonu
 - Çoklu dil desteği
 - Skor tablosu / oyuncular arası karşılaştırma
+- (v2) Oyuncu hakkında ad, e-posta, cihaz kimliği, konum gibi kişisel veri toplamak
+- (v2) Sahne 1'de tahmin (soğuk başlangıç), LLM ince ayarı, sunucuda çıkarım
